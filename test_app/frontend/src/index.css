@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply m-0 min-h-screen overflow-hidden bg-[#0a0a0a] text-white antialiased;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+}
+
+@layer utilities {
+  @keyframes slot-shake {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-2px); }
+    75% { transform: translateY(2px); }
+  }
+
+  @keyframes win-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes slide-up-fade {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes modal-slide-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .animate-slot-shake {
+    animation: slot-shake 0.1s ease-in-out infinite;
+  }
+
+  .animate-win-pulse {
+    animation: win-pulse 0.5s ease;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 0.8s ease;
+  }
+
+  .animate-slide-up-fade {
+    animation: slide-up-fade 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.2s ease;
+  }
+
+  .animate-modal-slide-up {
+    animation: modal-slide-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+}
