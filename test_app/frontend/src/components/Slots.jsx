@@ -1,14 +1,5 @@
 import React from 'react';
-
-const getImageUrl = (backendUrl, imagePath) => {
-  if (!imagePath) return '';
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
-  }
-  const base = backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl;
-  const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${base}${path}`;
-};
+import { getImageUrl } from '../utils';
 
 const Slots = ({ slots, isSpinning, finalItem, backendUrl }) => {
   const renderSlot = (item, isMiddle = false) => {
@@ -29,7 +20,7 @@ const Slots = ({ slots, isSpinning, finalItem, backendUrl }) => {
       >
         {item ? (
           <img
-            src={getImageUrl(backendUrl, item.image_path)}
+            src={getImageUrl(item.image_path)}
             alt=""
             className={`z-[2] object-contain ${isMiddle ? 'h-[85%] w-[85%]' : 'h-[80%] w-[80%]'}`}
             style={{

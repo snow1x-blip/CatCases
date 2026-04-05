@@ -1,14 +1,5 @@
 import React from 'react';
-
-const getImageUrl = (backendUrl, imagePath) => {
-  if (!imagePath) return '';
-  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
-  }
-  const base = backendUrl.endsWith('/') ? backendUrl.slice(0, -1) : backendUrl;
-  const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${base}${path}`;
-};
+import { getImageUrl } from '../utils';
 
 const InventoryModal = ({ isOpen, onClose, items, backendUrl }) => {
   if (!isOpen) return null;
@@ -50,7 +41,7 @@ const InventoryModal = ({ isOpen, onClose, items, backendUrl }) => {
               >
                 <div className="relative flex h-[60px] items-center justify-center">
                   <img
-                    src={getImageUrl(backendUrl, item.image_path)}
+                    src={getImageUrl(item.image_path)}
                     alt={item.name}
                     className="h-[50px] w-[50px] object-contain"
                   />

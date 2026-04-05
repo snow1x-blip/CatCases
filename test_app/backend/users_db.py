@@ -31,7 +31,7 @@ def add_item_to_inventory(telegram_id, item_id):
     conn = get_connection()
     cursor = conn.cursor()
     
-    cursor.execute("SELECT inventory FROM users WHERE telegram_id = %s", (telegram_id,))
+    cursor.execute("SELECT inventory FROM users WHERE telegram_id = %s FOR UPDATE", (telegram_id,))
     result = cursor.fetchone()
     
     if not result:

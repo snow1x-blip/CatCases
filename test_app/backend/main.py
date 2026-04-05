@@ -1,13 +1,22 @@
-from fastapi import FastAPI, HTTPException, Request
+import os
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from cats_db import get_all_items
 from users_db import get_or_create_user, add_item_to_inventory, get_user_inventory_details
 from cases_db import ensure_cases_table, seed_default_case, get_all_cases, get_case_items, pick_case_winner
 from telegram_auth import validate_telegram_init_data, get_init_data_from_request
+from test_race import generate_test_init_data
 from pathlib import Path
 import uvicorn
 import os
+
 
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,6 +29,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def get_current_user(request: Request, init_data: str | None = generate_test_init_data()):
+    init_data = get_init_data_from_request(request, init_data)
+    telegram_id, username = validate_telegram_init_data(init_data)
+    # Return user details
+    return get_or_create_user(telegram_id, username)
+
+def get_current_user_id(request: Request, init_data: str | None = generate_test_init_data()):
+    init_data = get_init_data_from_request(request, init_data)
+    telegram_id, _ = validate_telegram_init_data(init_data)
+    return telegram_id
 
 app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
 
@@ -34,43 +55,31 @@ def read_root():
     return {"message": "Cat Case API with Inventory"}
 
 @app.get("/api/spin")
-def spin_case(request: Request, case_id: int = 1, init_data: str | None = None):
-    init_data = get_init_data_from_request(request, init_data)
-    telegram_id, username = validate_telegram_init_data(init_data)
-    get_or_create_user(telegram_id, username)
-
+def spin_case(case_id: int = 1, current_user: dict = Depends(get_current_user)):
     winner = pick_case_winner(case_id)
     if not winner:
         raise HTTPException(status_code=404, detail="Case is empty or does not exist")
 
-    add_item_to_inventory(telegram_id, winner["id"])
+    add_item_to_inventory(current_user["telegram_id"], winner["id"])
     return winner
 
 @app.get("/api/inventory")
-def get_inventory(request: Request, init_data: str | None = None):
-    init_data = get_init_data_from_request(request, init_data)
-    telegram_id, _ = validate_telegram_init_data(init_data)
+def get_inventory(telegram_id: int = Depends(get_current_user_id)):
     items = get_user_inventory_details(telegram_id)
     return {"items": items}
 
 @app.get("/api/items")
-def get_catalog(request: Request, case_id: int | None = None, init_data: str | None = None):
-    init_data = get_init_data_from_request(request, init_data)
-    validate_telegram_init_data(init_data)
+def get_catalog(case_id: int | None = None, telegram_id: int = Depends(get_current_user_id)):
     if case_id is not None:
         return get_case_items(case_id)
     return get_all_items()
 
 @app.get("/api/cases")
-def list_cases(request: Request, init_data: str | None = None):
-    init_data = get_init_data_from_request(request, init_data)
-    validate_telegram_init_data(init_data)
+def list_cases(telegram_id: int = Depends(get_current_user_id)):
     return get_all_cases()
 
 @app.get("/api/cases/{case_id}/items")
-def list_case_items(case_id: int, request: Request, init_data: str | None = None):
-    init_data = get_init_data_from_request(request, init_data)
-    validate_telegram_init_data(init_data)
+def list_case_items(case_id: int, telegram_id: int = Depends(get_current_user_id)):
     return get_case_items(case_id)
 
 

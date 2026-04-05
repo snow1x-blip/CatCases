@@ -7,8 +7,10 @@ import time
 from urllib.parse import parse_qsl
 
 
-TELEGRAM_BOT_TOKEN = "8223396167:AAFl9iMFxFcdvaLjuqWVMeuPjFwGnLHls1U"
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 
+if not TELEGRAM_BOT_TOKEN:
+    print("WARNING: TELEGRAM_BOT_TOKEN is not set!")
 
 def validate_telegram_init_data(init_data: str):
     if not TELEGRAM_BOT_TOKEN:

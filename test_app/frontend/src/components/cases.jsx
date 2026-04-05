@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Slots from './Slots'
 import { spinCase, getCases, getCaseItems, BACKEND_URL } from '../api'
+import { getImageUrl } from '../utils'
 
 function Cases() {
   const [cases, setCases] = useState([]);
@@ -94,16 +95,6 @@ function Cases() {
     setFinalItem(null);
     setSlots([null, null, null]);
     setItemsPool([]);
-  };
-
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    const base = BACKEND_URL.endsWith('/') ? BACKEND_URL.slice(0, -1) : BACKEND_URL;
-    const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-    return `${base}${path}`;
   };
 
   if (!selectedCase) {

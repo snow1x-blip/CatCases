@@ -1,4 +1,4 @@
-export const BACKEND_URL = 'https://49a4b443e41a40.lhr.life';
+export const BACKEND_URL = 'https://cea22aabfbed2c.lhr.life';
 
 const getInitDataFromUrl = () => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -14,10 +14,6 @@ const getInitDataFromUrl = () => {
 
 const getTelegramInitData = () => {
   const webApp = window.Telegram?.WebApp;
-  if (webApp?.ready) {
-    webApp.ready();
-  }
-
   const initData = webApp?.initData || getInitDataFromUrl();
   if (!initData) {
     throw new Error('Telegram authentication data is missing. Please reopen the app from the bot menu button.');
@@ -37,7 +33,7 @@ const authFetch = async (path) => {
 
 export const spinCase = async (caseId) => {
   const response = await authFetch(`/api/spin?case_id=${encodeURIComponent(caseId)}`);
-  
+
   if (!response.ok) {
     const errText = await response.text();
     throw new Error(`Server ${response.status}: ${errText}`);

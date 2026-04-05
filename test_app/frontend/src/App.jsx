@@ -23,8 +23,8 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-linear-to-b from-[#0a0a0a] to-[#1a1a2e]">
-      <div className="flex w-full items-center justify-center px-5 pt-8 pb-5">
+    <div className="flex h-[100dvh] w-full flex-col items-center overflow-x-hidden overflow-y-auto bg-linear-to-b from-[#0a0a0a] to-[#1a1a2e]">
+      <div className="flex w-full shrink-0 items-center justify-center px-5 pt-8 pb-5">
         <h1 className="rounded-2xl border border-white/10 bg-white/8 px-8 py-3.5 text-center text-2xl font-bold tracking-[0.5px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.3)] backdrop-blur-md">
           Кото-Кейс
         </h1>
