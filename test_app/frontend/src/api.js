@@ -15,10 +15,7 @@ const getInitDataFromUrl = () => {
 const getTelegramInitData = () => {
   const webApp = window.Telegram?.WebApp;
   const initData = webApp?.initData || getInitDataFromUrl();
-  if (!initData) {
-    throw new Error('Telegram authentication data is missing. Please reopen the app from the bot menu button.');
-  }
-  return initData;
+  return initData || '';
 };
 
 const authFetch = async (path) => {

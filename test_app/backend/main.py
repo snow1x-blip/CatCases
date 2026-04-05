@@ -8,6 +8,7 @@ except ImportError:
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from cats_db import get_all_items
 from users_db import get_or_create_user, add_item_to_inventory, get_user_inventory_details
 from cases_db import ensure_cases_table, seed_default_case, get_all_cases, get_case_items, pick_case_winner
@@ -31,14 +32,18 @@ app.add_middleware(
 )
 
 
-def get_current_user(request: Request, init_data: str | None = generate_test_init_data()):
+def get_current_user(request: Request, init_data: str | None = None):
     init_data = get_init_data_from_request(request, init_data)
+    if not init_data:
+        init_data = generate_test_init_data()
     telegram_id, username = validate_telegram_init_data(init_data)
     # Return user details
     return get_or_create_user(telegram_id, username)
 
-def get_current_user_id(request: Request, init_data: str | None = generate_test_init_data()):
+def get_current_user_id(request: Request, init_data: str | None = None):
     init_data = get_init_data_from_request(request, init_data)
+    if not init_data:
+        init_data = generate_test_init_data()
     telegram_id, _ = validate_telegram_init_data(init_data)
     return telegram_id
 
@@ -50,9 +55,6 @@ def initialize_database():
     ensure_cases_table()
     seed_default_case()
 
-@app.get("/")
-def read_root():
-    return {"message": "Cat Case API with Inventory"}
 
 @app.get("/api/spin")
 def spin_case(case_id: int = 1, current_user: dict = Depends(get_current_user)):
@@ -82,6 +84,12 @@ def list_cases(telegram_id: int = Depends(get_current_user_id)):
 def list_case_items(case_id: int, telegram_id: int = Depends(get_current_user_id)):
     return get_case_items(case_id)
 
+@app.get("/{full_path:path}")
+def serve_frontend(full_path: str):
+    static_file = BASE_DIR / "static" / full_path
+    if static_file.is_file():
+        return FileResponse(static_file)
+    return FileResponse(BASE_DIR / "static" / "index.html")
 
 if __name__ == "__main__":
     uvicorn.run(
